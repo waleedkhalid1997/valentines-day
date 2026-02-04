@@ -110,9 +110,9 @@
         }
 
         .valentine-message {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #880e4f;
-            margin-top: 30px;
+            margin-top: 20px;
             animation: fadeIn 1s forwards;
             display: none;
         }
@@ -123,11 +123,140 @@
         }
 
         .bargain-text {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #d32f2f;
-            margin-top: 20px;
+            margin-top: 15px;
             opacity: 0;
             transition: opacity 0.5s;
+            padding: 0 10px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 20px;
+                border: 3px solid #ec407a;
+                margin: 15px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .hearts {
+                font-size: 2.2rem;
+                margin: 15px 0;
+                text-shadow: 0 0 8px rgba(233, 30, 99, 0.5);
+            }
+
+            .buttons-container {
+                gap: 20px;
+                margin-top: 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                padding: 15px 25px;
+                font-size: 1.5rem;
+                min-width: 120px;
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .bargain-text {
+                font-size: 1.2rem;
+                margin-top: 15px;
+            }
+
+            .valentine-message {
+                font-size: 1.6rem;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .hearts {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 1.3rem;
+                min-width: 100px;
+                max-width: 200px;
+            }
+
+            .bargain-text {
+                font-size: 1.1rem;
+            }
+
+            .valentine-message {
+                font-size: 1.4rem;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+        }
+
+        /* Ensure proper sizing on all devices */
+        body {
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 95%;
+            width: 100%;
+        }
+
+        /* Responsive kiss GIF section */
+        @media (max-width: 768px) {
+            #kiss-gif {
+                padding: 20px !important;
+                width: 90% !important;
+            }
+
+            #kiss-gif h2 {
+                font-size: 1.5rem !important;
+                margin-bottom: 10px !important;
+            }
+
+            #kiss-gif img {
+                max-height: 200px !important;
+            }
+
+            #kiss-gif p {
+                font-size: 1.1rem !important;
+                margin-top: 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #kiss-gif {
+                padding: 15px !important;
+                width: 95% !important;
+            }
+
+            #kiss-gif h2 {
+                font-size: 1.3rem !important;
+            }
+
+            #kiss-gif img {
+                max-height: 150px !important;
+            }
+
+            #kiss-gif p {
+                font-size: 1rem !important;
+            }
         }
 
         .hearts-falling {
@@ -191,21 +320,28 @@
         </div>
     </div>
 
+    <!-- Audio element for background music -->
+    <audio id="background-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         // Get name from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name') || 'Someone';
-        
+
         // Display the name
         document.getElementById('nameDisplay').textContent = name;
-        
+
         // Get references to buttons and elements
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const valentineMessage = document.getElementById('valentineMessage');
         const bargainText = document.getElementById('bargainText');
         const heartsContainer = document.getElementById('heartsContainer');
-        
+        const backgroundMusic = document.getElementById('background-music');
+
         let yesButtonScale = 1.0; // Reset initial scale to 1.0 to make growth more apparent
         let clickCount = 0; // Track number of clicks
 
@@ -213,6 +349,31 @@
         console.log("Initial yesButtonScale:", yesButtonScale);
         console.log("Initial clickCount:", clickCount);
         
+        // Play background music when page loads
+        window.addEventListener('load', function() {
+            // Attempt to play music immediately when page loads
+            backgroundMusic.volume = 0.4; // Set a lower volume for ambient music
+            backgroundMusic.play().then(() => {
+                console.log("Music started playing automatically");
+            }).catch(e => {
+                console.log("Auto-play prevented by browser policy. Will attempt to play on user interaction.");
+                // Fallback: play on first user interaction
+                document.body.addEventListener('touchstart', function enableMusicOnTouch() {
+                    backgroundMusic.play().catch(e => {
+                        console.log("Could not play music on touch:", e);
+                    });
+                    document.body.removeEventListener('touchstart', enableMusicOnTouch);
+                }, { once: true });
+
+                document.body.addEventListener('mousedown', function enableMusicOnClick() {
+                    backgroundMusic.play().catch(e => {
+                        console.log("Could not play music on click:", e);
+                    });
+                    document.body.removeEventListener('mousedown', enableMusicOnClick);
+                }, { once: true });
+            });
+        });
+
         // Add event listener to Yes button
         yesBtn.addEventListener('click', function() {
             // Hide all elements except the body background
@@ -233,16 +394,16 @@
             kissGif.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
 
             kissGif.innerHTML = `
-                <h2 style="color: #d81b60; margin-bottom: 20px;">You're Mine! 😘💕</h2>
+                <h2 style="color: #d81b60; margin-bottom: 15px; font-size: 1.8rem;">You're Mine! 😘💕</h2>
                 <img src="https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif"
                      alt="Romantic Kissing"
-                     style="max-width: 100%; height: auto; border-radius: 15px;">
-                <p style="color: #880e4f; font-size: 1.5rem; margin-top: 20px;">Thank you for saying YES! 💖</p>
+                     style="max-width: 100%; height: auto; border-radius: 15px; max-height: 300px;">
+                <p style="color: #880e4f; font-size: 1.3rem; margin-top: 15px;">Thank you for saying YES! 💖</p>
             `;
 
             document.body.appendChild(kissGif);
         });
-        
+
         // Add click event to No button to increase Yes button size
         noBtn.addEventListener('click', function(e) {
             e.preventDefault(); // Prevent any default behavior
@@ -297,65 +458,65 @@
             // Create floating hearts effect
             createFloatingHearts(5);
         });
-        
+
         function createFloatingHearts(count) {
             for (let i = 0; i < count; i++) {
                 const heart = document.createElement('div');
                 heart.className = 'heart';
                 heart.innerHTML = '❤';
-                
+
                 // Random position
                 heart.style.left = Math.random() * window.innerWidth + 'px';
                 heart.style.top = '-30px';
-                
+
                 // Random size
                 const size = Math.random() * 20 + 15;
                 heart.style.fontSize = size + 'px';
-                
+
                 // Random color
                 const colors = ['#ff6b6b', '#ff8e8e', '#ffafaf', '#ffb6c1', '#ff69b4'];
                 heart.style.color = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 // Random animation duration
                 const duration = Math.random() * 3 + 2;
                 heart.style.animationDuration = duration + 's';
-                
+
                 heartsContainer.appendChild(heart);
-                
+
                 // Remove element after animation completes
                 setTimeout(() => {
                     heart.remove();
                 }, duration * 1000);
             }
         }
-        
+
         // Create initial falling hearts
         function createFallingHearts() {
             setInterval(() => {
                 const heart = document.createElement('div');
                 heart.className = 'heart';
                 heart.innerHTML = '❤';
-                
+
                 heart.style.left = Math.random() * window.innerWidth + 'px';
                 heart.style.top = '-30px';
-                
+
                 const size = Math.random() * 20 + 15;
                 heart.style.fontSize = size + 'px';
-                
+
                 const colors = ['#ff6b6b', '#ff8e8e', '#ffafaf', '#ffb6c1', '#ff69b4'];
                 heart.style.color = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 const duration = Math.random() * 5 + 3;
                 heart.style.animationDuration = duration + 's';
-                
+
                 heartsContainer.appendChild(heart);
-                
+
                 setTimeout(() => {
                     heart.remove();
                 }, duration * 1000);
             }, 500);
         }
-        
+
         // Start falling hearts
         createFallingHearts();
     </script>
