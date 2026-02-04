@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romantic Valentine's Day Page</title>
+    <style>
+        body {
+            font-family: 'Brush Script MT', cursive, 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f8bbd0, #f48fb1, #e91e63, #ad1457, #880e4f);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgb(255 255 255 / 47%);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 90%;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            border: 4px solid #ec407a;
+        }
+
+        h1 {
+            color: #880e4f;
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-family: 'Georgia', serif;
+        }
+
+        .hearts {
+            font-size: 3.5rem;
+            margin: 25px 0;
+            animation: pulse 1.5s infinite;
+            color: #ad1457;
+            text-shadow: 0 0 10px rgba(233, 30, 99, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 20px 40px;
+            font-size: 1.8rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #ff79a5, #ec407a, #ad1457);
+            color: white;
+            transform: scale(1.0);
+            animation: bounce 2s infinite;
+            border: 2px solid #fff;
+        }
+
+        /* @keyframes bounce {
+            0%, 100% { transform: scale(1.0); }
+            50% { transform: scale(1.1); }
+        } */
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff80ab, #f06292, #c2185b);
+        }
+
+        .no-btn {
+            background: linear-gradient(135deg, #ff9e80, #ff7043, #d84315);
+            color: white;
+            border: 2px solid #fff;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .valentine-message {
+            font-size: 2rem;
+            color: #880e4f;
+            margin-top: 30px;
+            animation: fadeIn 1s forwards;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bargain-text {
+            font-size: 1.5rem;
+            color: #d32f2f;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .hearts-falling {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            animation: fall linear forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .full-screen-btn {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8rem;
+            text-align: center;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts-falling" id="heartsContainer"></div>
+    
+    <div class="container">
+        <h1><span id="nameDisplay"></span>, will you be my Valentine?</h1>
+        <div class="hearts">❤ ❤ ❤</div>
+        
+        <div class="buttons-container">
+            <button class="btn yes-btn" id="yesBtn">YES! 💕</button>
+            <button class="btn no-btn" id="noBtn">NO</button>
+        </div>
+        
+        <div class="bargain-text" id="bargainText">
+            Are you sure? Think again! 😿
+        </div>
+        
+        <div class="valentine-message" id="valentineMessage">
+        </div>
+    </div>
+
+    <script>
+        // Get name from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || 'Someone';
+        
+        // Display the name
+        document.getElementById('nameDisplay').textContent = name;
+        
+        // Get references to buttons and elements
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const valentineMessage = document.getElementById('valentineMessage');
+        const bargainText = document.getElementById('bargainText');
+        const heartsContainer = document.getElementById('heartsContainer');
+        
+        let yesButtonScale = 1.0; // Reset initial scale to 1.0 to make growth more apparent
+        let clickCount = 0; // Track number of clicks
+
+        // Log initial values for debugging
+        console.log("Initial yesButtonScale:", yesButtonScale);
+        console.log("Initial clickCount:", clickCount);
+        
+        // Add event listener to Yes button
+        yesBtn.addEventListener('click', function() {
+            // Hide all elements except the body background
+            document.querySelector('.container').style.display = 'none';
+
+            // Create and show the kissing GIF
+            const kissGif = document.createElement('div');
+            kissGif.id = 'kiss-gif';
+            kissGif.style.position = 'fixed';
+            kissGif.style.top = '50%';
+            kissGif.style.left = '50%';
+            kissGif.style.transform = 'translate(-50%, -50%)';
+            kissGif.style.zIndex = '2000';
+            kissGif.style.textAlign = 'center';
+            kissGif.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            kissGif.style.padding = '30px';
+            kissGif.style.borderRadius = '20px';
+            kissGif.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+
+            kissGif.innerHTML = `
+                <h2 style="color: #d81b60; margin-bottom: 20px;">You're Mine! 😘💕</h2>
+                <img src="https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif"
+                     alt="Romantic Kissing"
+                     style="max-width: 100%; height: auto; border-radius: 15px;">
+                <p style="color: #880e4f; font-size: 1.5rem; margin-top: 20px;">Thank you for saying YES! 💖</p>
+            `;
+
+            document.body.appendChild(kissGif);
+        });
+        
+        // Add click event to No button to increase Yes button size
+        noBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent any default behavior
+
+            console.log("No button clicked, current scale:", yesButtonScale); // Debug log
+
+            // Show bargain text
+            bargainText.style.opacity = '1';
+
+            // Change text after multiple clicks
+            const messages = [
+                "Think about this again! 💕",
+                "Are you sure? My heart is yours! 💖",
+                "Don't break my heart! 💔",
+                "Give me a chance! 💞",
+                "Please reconsider! 💌",
+                "My heart is yours! 💘",
+                "One more thought? 💝"
+            ];
+            bargainText.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+
+            // Increase Yes button size on each No click
+            clickCount++;
+            yesButtonScale += 0.3; // Increased increment for more noticeable growth
+
+            console.log("New scale after increment:", yesButtonScale); // Debug log
+
+            // Check if the button should become full screen
+            if (yesButtonScale >= 15) { // Increased threshold to allow more growth steps
+                yesBtn.classList.add('full-screen-btn');
+                yesBtn.style.animation = 'none'; // Remove animation when full screen
+                yesBtn.style.transform = 'scale(1)';
+                yesBtn.style.width = '100vw';
+                yesBtn.style.height = '100vh';
+                yesBtn.style.borderRadius = '0';
+                yesBtn.style.zIndex = '1000'; // Ensure it's on top
+                yesBtn.textContent = 'YES! 😘💖';
+
+                // Hide the No button when full screen
+                noBtn.style.display = 'none';
+
+                // Show final message
+                bargainText.innerHTML = 'Finally! You chose YES! 💕🎉';
+            } else {
+                // Pause the bounce animation when scaling
+                yesBtn.style.animationPlayState = 'paused';
+                yesBtn.style.transform = `scale(${yesButtonScale})`;
+                yesBtn.style.transition = 'transform 0.5s ease';
+                console.log("Applied transform:", `scale(${yesButtonScale})`); // Debug log
+            }
+
+            // Create floating hearts effect
+            createFloatingHearts(5);
+        });
+        
+        function createFloatingHearts(count) {
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                
+                // Random position
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = '-30px';
+                
+                // Random size
+                const size = Math.random() * 20 + 15;
+                heart.style.fontSize = size + 'px';
+                
+                // Random color
+                const colors = ['#ff6b6b', '#ff8e8e', '#ffafaf', '#ffb6c1', '#ff69b4'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random animation duration
+                const duration = Math.random() * 3 + 2;
+                heart.style.animationDuration = duration + 's';
+                
+                heartsContainer.appendChild(heart);
+                
+                // Remove element after animation completes
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+        }
+        
+        // Create initial falling hearts
+        function createFallingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = '-30px';
+                
+                const size = Math.random() * 20 + 15;
+                heart.style.fontSize = size + 'px';
+                
+                const colors = ['#ff6b6b', '#ff8e8e', '#ffafaf', '#ffb6c1', '#ff69b4'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                const duration = Math.random() * 5 + 3;
+                heart.style.animationDuration = duration + 's';
+                
+                heartsContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }, 500);
+        }
+        
+        // Start falling hearts
+        createFallingHearts();
+    </script>
+</body>
+</html>
