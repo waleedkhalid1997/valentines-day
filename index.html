@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day Page</title>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #d81b60;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .hearts {
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .yes-btn {
+            background-color: #e91e63;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.05);
+            background-color: #d81b60;
+        }
+
+        .no-btn {
+            background-color: #f44336;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transition: none;
+        }
+
+        .floating-btn {
+            animation: float 2s infinite ease-in-out;
+            animation-play-state: paused;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(20px, -20px); }
+            50% { transform: translate(-20px, 20px); }
+            75% { transform: translate(20px, 20px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .valentine-message {
+            font-size: 1.5rem;
+            color: #880e4f;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span id="nameDisplay"></span>, will you be my Valentine?</h1>
+        <div class="hearts">❤ ❤</div>
+        
+        <div class="buttons-container">
+            <button class="btn yes-btn" id="yesBtn">Yes</button>
+            <button class="btn no-btn floating-btn" id="noBtn">No</button>
+        </div>
+        
+        <div class="valentine-message hidden" id="valentineMessage">
+            Yay! You made my heart flutter! ❤️
+        </div>
+    </div>
+
+    <script>
+        // Get name from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || 'Someone';
+        
+        // Display the name
+        document.getElementById('nameDisplay').textContent = name;
+        
+        // Get references to buttons
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const valentineMessage = document.getElementById('valentineMessage');
+        
+        // Add event listener to Yes button
+        yesBtn.addEventListener('click', function() {
+            valentineMessage.classList.remove('hidden');
+            yesBtn.textContent = 'Yay!';
+            yesBtn.style.backgroundColor = '#4CAF50';
+        });
+        
+        // Add event listeners to No button to make it float away
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton);
+        
+        function moveButton(e) {
+            // Pause any ongoing animation
+            noBtn.style.animationPlayState = 'paused';
+            
+            // Calculate random position within the viewport
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            
+            // Apply new position
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            
+            // Resume animation
+            setTimeout(() => {
+                noBtn.style.animationPlayState = 'running';
+            }, 10);
+        }
+    </script>
+</body>
+</html>
